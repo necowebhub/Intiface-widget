@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Intiface Widget</title>
+  <style>
+    body {
+      background: transparent;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #indicator {
+      max-width: 256px;  /* подгони под размер картинок */
+      max-height: 256px;
+    }
+  </style>
+</head>
+<body>
+  <img id="indicator" src="images/disconnected.png" alt="status">
+
+  <script>
+    const indicator = document.getElementById("indicator");
+
+    // Пути к твоим картинкам
+    const icons = {
+      disconnected: "images/disconnected.png",
+      connected: "images/connected.png",
+      level1: "images/level1.png",
+      level2: "images/level2.png",
+      warning: "images/warning.png"
+    };
+
+    function setState(state) {
+      indicator.src = icons[state] || icons.warning;
+    }
+
+    let ws;
+    function connect() {
+      ws = new WebSocket("ws://127.0.0.1:12345"); // порт Intiface Central
+
+      ws.onopen = () => setState("connected");
+      ws.onclose = () => setState("disconnected");
+      ws.onerror = () => setState("warning");
+
+      ws.onmessage = (msg) => {
+        try {
+          const data = JSON.parse(msg.data);
+
+          // Пример: уровень вибрации приходит в data.vibration (0..1)
+          if (data.vibration !== undefined) {
+            if (data.vibration < 0.5) {
+              setState("level1");
+            } else {
+              setState("level2");
+            }
+          }
+        } catch (e) {
+          setState("warning");
+        }
+      };
+    }
+
+    connect();
+  </script>
+</body>
+</html>
