@@ -41,23 +41,37 @@
     function connect() {
       ws = new WebSocket("ws://127.0.0.1:12345"); // порт Intiface Central
 
-      ws.onopen = () => setState("connected");
-      ws.onclose = () => setState("disconnected");
-      ws.onerror = () => setState("warning");
+      ws.onopen = () => {
+        console.log("Connected to Intiface Central");
+        setState("connected");
+      }
+
+      ws.onclose = () => {
+        console.log("Disconnected");
+        setState("disconnected");
+      }
+
+      ws.onerror = () => {
+        console.log("WebSocket error", err);
+        setState("warning");
+      }
 
       ws.onmessage = (msg) => {
         try {
           const data = JSON.parse(msg.data);
 
-          // Пример: уровень вибрации приходит в data.vibration (0..1)
-          if (data.vibration !== undefined) {
-            if (data.vibration < 0.5) {
-              setState("level1");
+          if (data.ScalarCmd) {
+            const level = data.ScalarCmd.Params[0].Scalar;
+            if (level > 0) {
+              if (level < 0.5) setState("level1");
+              else setState("level2");
             } else {
-              setState("level2");
+              setState("connected");
             }
           }
+
         } catch (e) {
+          console.error("Parse error", e);
           setState("warning");
         }
       };
