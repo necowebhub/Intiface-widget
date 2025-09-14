@@ -13,7 +13,7 @@
       height: 100vh;
     }
     #indicator {
-      max-width: 256px;  /* подгони под размер картинок */
+      max-width: 256px;
       max-height: 256px;
     }
   </style>
@@ -23,8 +23,7 @@
 
   <script>
     const indicator = document.getElementById("indicator");
-
-    // Пути к твоим картинкам
+
     const icons = {
       disconnected: "images/disconnected.png",
       connected: "images/connected.png",
@@ -61,12 +60,19 @@
           const data = JSON.parse(msg.data);
 
           if (data.ScalarCmd) {
-            const level = data.ScalarCmd.Params[0].Scalar;
+            const scalars = data.ScalarCmd.Scalars || [];
+
+            const vib = scalars.find(s => s.ActuatorType === "Vibrate");
+
+            if (vib) {
+              const level = vib.Scalar;
+
             if (level > 0) {
               if (level < 0.5) setState("level1");
               else setState("level2");
             } else {
               setState("connected");
+            }
             }
           }
 
