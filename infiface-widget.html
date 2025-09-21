@@ -38,7 +38,7 @@
 
     let ws;
     function connect() {
-      ws = new WebSocket("ws://127.0.0.1:12345"); // порт Intiface Central
+      ws = new WebSocket("ws://127.0.0.1:12345");
 
       ws.onopen = () => {
         console.log("Connected to Intiface Central");
