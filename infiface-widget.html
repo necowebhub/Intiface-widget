@@ -52,7 +52,7 @@
         console.log("Handshake Sent");
         deviceWebsocket.addEventListener("message", async (event) => {
 
-          let msg = event.data.text();
+          let msg = event.data;
           console.log(msg);
           if (msg.indexOf("DeviceType;") !== -1) {
             console.log("got device type");
