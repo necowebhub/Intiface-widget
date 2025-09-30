@@ -68,6 +68,7 @@
             // If it's a vibrate message, get the vibrate level, which will be 0-20.
             let regex = /Vibrate:([0-9]+)/;
             let match = msg.match(regex);
+            console.log(match)
             if (match.length > 1) {
               if (match.length > 10) {
                 console.log(match[1]);
